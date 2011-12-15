@@ -28,6 +28,10 @@
  * - professional redesign?
  *
  * To compile:
+ * - debug:
+ * opa-plugin-builder -o pixlpaste_binding pixlpaste_binding.js; opa --parser js-like pixlpaste_binding.opp pixlpaste.opa --
+ *
+ * - release:
  * opa-plugin-builder -o pixlpaste_binding pixlpaste_binding.js
  * opa --parser js-like --compile-release pixlpaste_binding.opp pixlpaste.opa
  * sudo nohup ./pixlpaste.exe -p 80 & disown
@@ -341,15 +345,11 @@ function resource display_home() {
     case _:
       display(
       <>
-        <h1>Sorry, your browser is not supported</h1>
+        <h1>Sorry, your browser is currently not supported</h1>
         <p>pixlpaste.com has been tested with the following browsers:</p>
         <ul>
-          <li>Firefox 3+: works</li>
-          <li>Chrome: works</li>
-          <li>Safari: will not be supported</li>
-          <li>Opera: will not be supported</li>
-          <li>Internet Explorer: work in progress</li>
-          <li>Others: ???</li>
+          <li>Firefox 3+</li>
+          <li>Chrome</li>
         </ul>
       </>);
   }

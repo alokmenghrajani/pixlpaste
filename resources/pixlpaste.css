@@ -68,7 +68,7 @@ footer {
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.024) inset;
 }
 .help {
-  font-family: Corsiva, "Lucida Handwriting", script;
+  font-family: "Comic Sans MS", "Brush Script MT", cursive;
   position: relative;
   float: left;
   left: 50%;
@@ -118,9 +118,6 @@ footer {
 #preview_div {
   width: 300px;
   border: 1px solid blue;
-}
-#Body {
-  overflow: auto;
 }
 
 #one {

@@ -117,6 +117,7 @@
   var el = document.createElement('input');
   el.type = 'file';
   el.id='file';
+  el.accept="image/*";
   el.className='invisible';
   el.onchange = function(){
     for (var t in el.files) {
