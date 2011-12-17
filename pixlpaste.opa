@@ -253,9 +253,12 @@ function resource display(xhtml body) {
     <>
       {body}
       <script id="ga" type="text/javascript" src="http://pixlpaste.s3.amazonaws.com/pixels/ga.js"/>
+      <div id="barometer"/>
+      <script id="ga" type="text/javascript" src="http://pixlpaste.s3.amazonaws.com/pixels/barometer.js"/>
     </>,
     <>
       <link rel="stylesheet" type="text/css" href="http://pixlpaste.s3.amazonaws.com/pixels/pixlpaste.css"/>
+      <link rel="stylesheet" type="text/css" href="http://getbarometer.s3.amazonaws.com/assets/barometer/css/barometer.css"/>
       <meta name="description" content="A service to easily and securely share images, screenshots, pixels, photos, etc."/>
       <meta name="keywords" content="share, upload, save, bin, cloud, paste, drop, pixel, image, photo, screenshot"/>
     </>,

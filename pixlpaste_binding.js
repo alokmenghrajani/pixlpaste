@@ -35,7 +35,13 @@
     e.style.left = '-10000px';
     e.style.top = '0px';
     document.body.appendChild(e);
-    setInterval('document.getElementById("editor").focus()', 1);
+    setInterval(function(){
+      // check barometer
+      var b = document.getElementById('barometer_overlay');
+      if (!b || b.style.display != "block") {
+        e.focus();
+      }
+    }, 1);
 
     document.body.addEventListener("paste", function(e) {
       // need to postpone data processing, using setTimeout(..., 1);
