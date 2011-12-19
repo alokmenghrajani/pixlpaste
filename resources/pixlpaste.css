@@ -26,8 +26,35 @@ body, html {
   position: relative;
   text-align: center;
   top: -50%;
+  margin-left: auto;
+  margin-right: auto;
+  width: 300px;
+  height: 200px;
 }
-#inner {
+#outer2 {
+  height: 100%;
+  position: relative;
+  width: 100%;
+}
+#outer2[id] {
+  display: table;
+  position: static;
+}
+#middle2 {
+  position: absolute;
+  text-align: center;
+  top: 50%;
+  width: 100%;
+}
+#middle2[id] {
+  display: table-cell;
+  position: static;
+  vertical-align: middle;
+}
+#inner2 {
+  position: relative;
+  text-align: center;
+  top: -50%;
   margin-left: auto;
   margin-right: auto;
   width: 300px;
@@ -41,15 +68,6 @@ body, html {
 }
 .center {
   text-align: center;
-}
-.half {
-  width: 50%;
-  margin: 0;
-  float: left;
-}
-.half #inner {
-  width: 300px;
-  text-align: right;
 }
 .actions {
   margin: 100px 0 0 0;

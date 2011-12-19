@@ -6,8 +6,6 @@
  * - rewrite browser compatiblity jonx
  *   - make it look nice on iphone?
  *
- * - windows: font size needs to be fixed
- *
  * - consider writing the file upload + drag'n' drop in opa instead of
  *   the external js binding jonx
  *
@@ -23,9 +21,11 @@
  *
  * - like / twitter buttons
  *
- * - submit feedback button (http://goo.gl/mod/G7PK) ?
+ * - drag'n'drop from other sites
  *
- * - professional redesign?
+ * - flash img uploader for ie
+ *
+ * - clean up css. Improve centering code?
  *
  * To compile:
  * - debug:
@@ -425,7 +425,7 @@ function resource display_pixlpaste() {
       <div class="help">
         <span id="help4_arrow" class="hidden"><img src="http://pixlpaste.s3.amazonaws.com/pixels/4.png"/></span>
       </div>
-      <div id="outer"><div id="middle"><div id="inner">
+      <div id="outer2"><div id="middle2"><div id="inner2">
         <div class="alert-message error hidden" id=#error/>
         <img id=#preview class="preview" src="http://pixlpaste.s3.amazonaws.com/pixels/preview.png" alt=""/>
         <br/>
