@@ -23,8 +23,6 @@
  *
  * - drag'n'drop from other sites
  *
- * - flash img uploader for ie
- *
  * - clean up css. Improve centering code?
  *
  * To compile:
@@ -225,12 +223,11 @@ client function void upload_data() {
 
 exposed function upload_info upload_first_piece(upload_info info, string piece) {
   // TODO: what if id is already taken?
-  // TODO: increase range of characters
-  string id = Random.string(4);
+  string id = Random.generic_string("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 4);
   string secret = Random.string(10);
   intmap data = Map.empty;
   data = Map.add(0, piece, data);
-  /pixels[id] <- {data:data, secret:secret};
+  /pixels[id] <- {data: data, secret: secret};
   {id: id, secret: secret, offset: info.offset + String.length(piece)}
 }
 
