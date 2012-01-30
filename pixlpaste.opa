@@ -25,6 +25,8 @@
  *
  * - clean up css. Improve centering code?
  *
+ * - handle content-type
+ *
  * To compile:
  * - debug:
  * opa-plugin-builder -o pixlpaste_binding pixlpaste_binding.js; opa --parser js-like pixlpaste_binding.opp pixlpaste.opa --
@@ -140,15 +142,6 @@ exposed server function s3_upload_data(string id) {
     p.data,
     "");
 
-  // data is in the following format:
-  // data:image/<png|jpeg|etc.>;base64,<base64 encoded data>
-  // for now, we'll only locate ";base64," and ignore the first part
-  // we'll tell the browser the image is image/png, even if that's
-  // not the case (browsers are smart enough to figure things out)
-  int offset = Option.get(String.index(";base64,", data)) + 8
-  data = String.sub(offset, String.length(data)-offset, data)
-  data = Crypto.Base64.decode(data)
-
   string mimetype = "image/png"
   date_printer = Date.generate_printer("%a, %0d %b %Y %T UTC")
   string date = Date.to_formatted_string(date_printer, Date.now())
@@ -185,6 +178,17 @@ client function void upload_data() {
   Dom.add_class(#label, "hidden")
 
   string data = Option.get(Dom.get_property(#preview, "src"));
+
+  // data is in the following format:
+  // data:image/<png|jpeg|etc.>;base64,<base64 encoded data>
+  // for now, we'll only locate ";base64," and ignore the first part
+  // we'll tell the browser the image is image/png, even if that's
+  // not the case (browsers are smart enough to figure things out)
+
+  // base64 decode the data on the client side. This will speed up the upload
+  int offset = Option.get(String.index(";base64,", data)) + 8
+  data = String.sub(offset, String.length(data)-offset, data)
+  data = Crypto.Base64.decode(data)
 
   // For now we must upload the data in base64, due to a bug in the framework
   int length = String.length(data);
