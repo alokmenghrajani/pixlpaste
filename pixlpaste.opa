@@ -143,16 +143,13 @@ exposed server function s3_upload_data(string id) {
     "");
 
   string mimetype = "image/png"
-  date_printer = Date.generate_printer("%a, %0d %b %Y %T UTC")
+  date_printer = Date.generate_printer("%a, %0d %b %Y %T PST")
   string date = Date.to_formatted_string(date_printer, Date.now())
   string sts = "PUT\n\n{mimetype}\n{date}\n/pixlpaste/pixels/{id}"
   string public_key = (/s3).public_key
   string private_key = (/s3).private_key
 
-  // Stupid hack because opa drops trailing =. Here we know that
-  // we always need exactly one = symbol, so we just stick it at the
-  // end.
-  string hmac = "{Crypto.Base64.encode(Crypto.Hash.hmac_sha1(private_key, sts))}=";
+  string hmac = Crypto.Base64.encode(Crypto.Hash.hmac_sha1(private_key, sts));
 
   string headers = "Date: {date}\nAuthorization: AWS {public_key}:{hmac}";
 
