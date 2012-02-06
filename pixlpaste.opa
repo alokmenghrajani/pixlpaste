@@ -255,7 +255,7 @@ function resource display(xhtml body) {
       <script id="ga" type="text/javascript" src="http://pixlpaste.s3.amazonaws.com/pixels/barometer.js"/>
     </>,
     <>
-      <link rel="stylesheet" type="text/css" href="http://pixlpaste.s3.amazonaws.com/pixels/pixlpaste.css"/>
+      <link rel="stylesheet" type="text/css" href="http://localhost/~amenghra/pixlpaste.css"/>
       <link rel="stylesheet" type="text/css" href="http://getbarometer.s3.amazonaws.com/assets/barometer/css/barometer.css"/>
       <meta name="description" content="A service to easily and securely share images, screenshots, pixels, photos, etc."/>
       <meta name="keywords" content="share, upload, save, bin, cloud, paste, drop, pixel, image, photo, screenshot"/>
@@ -396,10 +396,14 @@ function resource display_pixlpaste() {
   };
 */
   display(
-    <div id="outer" onready={function(_){client_init()}}><div id="middle"><div id="inner">
-      <div class="help">
-        <div id="help1">paste from clipboard</div>
-      </div>
+    <>
+    <div id="logo"><img src="resources/logo.png"/></div>
+    <div id="outer" onready={function(_){client_init()}}>
+      <div id="middle">
+        <div id="inner">
+          <div class="help">
+            <div id="help1">paste from clipboard</div>
+          </div>
       <div class="help">
         <div id="help2">drag 'n' drop an image</div>
       </div>
@@ -431,6 +435,7 @@ function resource display_pixlpaste() {
         <div id=#label class="help-block hidden"/>
       </div></div></div>
     </div></div></div>
+    </>
   );
 }
 

@@ -2,6 +2,13 @@ body, html {
   height: 100%;
   width: 100%;
 }
+#logo {
+  width: 328px;
+  height: 0px;
+  margin-top: 20px;
+  margin-left: auto;
+  margin-right: auto;
+}
 #outer {
   height: 100%;
   position: relative;
@@ -137,7 +144,6 @@ footer {
   width: 300px;
   border: 1px solid blue;
 }
-
 #one {
   margin: 5% auto;
   width: 80%;
