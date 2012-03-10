@@ -35,7 +35,7 @@
  * - release:
  * opa-plugin-builder -o pixlpaste_binding pixlpaste_binding.js
  * opa --parser js-like --compile-release pixlpaste_binding.opp amazon_s3.opa amazon_s3_auth.opa pixlpaste.opa
- * sudo nohup ./pixlpaste.exe -p 80 & disown
+ * nohup ./pixlpaste.exe -p <port> --rotate-interval 1 & disown
  */
 
 import stdlib.web.client
