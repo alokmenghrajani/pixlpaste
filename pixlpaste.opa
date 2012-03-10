@@ -359,7 +359,7 @@ function resource display_pixlpaste() {
 */
   display(
     <>
-    <div id="logo"><img src="resources/logo.png"/></div>
+    <div id="logo"><img src="http://pixlpaste.s3.amazonaws.com/pixels/logo.png"/></div>
     <div id="outer" onready={function(_){client_init()}}>
       <div id="middle">
         <div id="inner">
