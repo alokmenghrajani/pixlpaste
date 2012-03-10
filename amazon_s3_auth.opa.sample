@@ -1,4 +1,5 @@
 module AmazonS3Auth {
-  public_key = "44CF9590006BF252F707"
-  private_key = "OtxrzxIsfpFjA7SwPzILwy8Bw21TLhquhboDYROV"
+  server string public_key = "44CF9590006BF252F707"
+  server string private_key = "OtxrzxIsfpFjA7SwPzILwy8Bw21TLhquhboDYROV"
+  server string timezone = "PST"
 }

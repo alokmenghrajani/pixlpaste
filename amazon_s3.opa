@@ -82,7 +82,7 @@ module AmazonS3 {
 
   function put(string bucket, string path, string mimetype, string data) {
     headers = computeSignature("PUT", "", mimetype, bucket, path)
-    WebClient.Put.try_put_with_options(
+    _ = WebClient.Put.try_put_with_options(
       Option.get(Uri.of_string("http://{bucket}.s3.amazonaws.com/{path}")),
       data,
       {
@@ -96,12 +96,14 @@ module AmazonS3 {
         ssl_policy: {none},
       }
     )
+
     // todo: convert response to AmazonS3.response
     {success}
   }
 
   function string computeSignature(string method, string md5, string mimetype, string bucket, string path) {
-    date_printer = Date.generate_printer("%a, %0d %b %Y %T PST")
+    timezone = AmazonS3Auth.timezone
+    date_printer = Date.generate_printer("%a, %0d %b %Y %T {timezone}")
     string date = Date.to_formatted_string(date_printer, Date.now())
     string sts = "{method}\n{md5}\n{mimetype}\n{date}\n/{bucket}/{path}"
     string hmac = Crypto.Base64.encode(Crypto.Hash.hmac_sha1(AmazonS3Auth.private_key, sts))

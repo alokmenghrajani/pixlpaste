@@ -12,8 +12,6 @@
  * - base64 decode the data on the client side before uploading.
  *   => waiting for: opa bug fix
  *
- * - convert to jpg
- *
  * - Fix date (hard coded UTC) issue
  *
  * - about page, help page
@@ -27,20 +25,22 @@
  *
  * - clean up css. Improve centering code?
  *
- * - handle content-type
+ * - improve urls we generate
  *
  * To compile:
  * - debug:
- * opa-plugin-builder -o pixlpaste_binding pixlpaste_binding.js; opa --parser js-like pixlpaste_binding.opp pixlpaste.opa --
+ * opa-plugin-builder -o pixlpaste_binding pixlpaste_binding.js
+ * opa --parser js-like pixlpaste_binding.opp amazon_s3.opa amazon_s3_auth.opa pixlpaste.opa --
  *
  * - release:
  * opa-plugin-builder -o pixlpaste_binding pixlpaste_binding.js
- * opa --parser js-like --compile-release pixlpaste_binding.opp pixlpaste.opa
+ * opa --parser js-like --compile-release pixlpaste_binding.opp amazon_s3.opa amazon_s3_auth.opa pixlpaste.opa
  * sudo nohup ./pixlpaste.exe -p 80 & disown
  */
 
 import stdlib.web.client
 import stdlib.crypto
+import stdlib.web.canvas
 
 type pixel = {
   intmap(string) data,
@@ -54,13 +54,6 @@ type upload_info = {
 }
 
 database stringmap(pixel) /pixels
-
-type s3_credentials = {
-  string private_key,
-  string public_key
-}
-
-database s3_credentials /s3
 
 client hook_paste = %%pixlpaste_binding.hook_paste%%
 client hook_drop = %%pixlpaste_binding.hook_drop%%
@@ -123,53 +116,31 @@ function void render_preview(string data) {
   })
 }
 
-/**
- * EC2 stuff
- */
-exposed server function resource s3_save_credentials(s3_credentials new_credentials) {
-  if (Db.exists(@/s3)) {
-    Resource.raw_text("already saved: {(/s3).public_key}")
-  } else {
-    /s3 <- new_credentials
-    Resource.raw_text("credentials saved!")
-  }
-}
-
 exposed server function s3_upload_data(string id) {
   p = /pixels[id];
+
   string data = Map.fold(
     function(_, v, r) {
       String.concat("", [r, v])
     },
     p.data,
-    "");
+    ""
+  );
 
-  string mimetype = "image/png"
-  date_printer = Date.generate_printer("%a, %0d %b %Y %T PST")
-  string date = Date.to_formatted_string(date_printer, Date.now())
-  string sts = "PUT\n\n{mimetype}\n{date}\n/pixlpaste/pixels/{id}"
-  string public_key = (/s3).public_key
-  string private_key = (/s3).private_key
+  // data is in the following format:
+  // data:image/<png|jpeg|etc.>;base64,<base64 encoded data>
+  int offset = Option.get(String.index(";base64,", data))+8
+  mimetype = String.sub(5, offset-5-8, data)
+  data = String.sub(offset, String.length(data)-offset, data)
+  data = Crypto.Base64.decode(data)
 
-  string hmac = Crypto.Base64.encode(Crypto.Hash.hmac_sha1(private_key, sts));
+  AmazonS3.put("pixlpaste", "pixels/{id}", mimetype, data)
+  // TODO: handle errors
 
-  string headers = "Date: {date}\nAuthorization: AWS {public_key}:{hmac}";
+  // Delete local data, since S3 now has the data
+  // TODO: implement file not found logic against S3
+  Db.remove(@/pixels[id]/data)
 
-  result = WebClient.Put.try_put_with_options(
-    Option.get(Uri.of_string("http://pixlpaste.s3.amazonaws.com/pixels/{id}")),
-    data,
-    {
-      auth: {none},
-      custom_headers: {some:headers},
-      mimetype: mimetype,
-      custom_agent: {none},
-      redirect_to_get: {none},
-      timeout_sec: {none},
-      ssl_key: {none},
-      ssl_policy: {none}
-    }
-  )
-  // Todo: handle errors!
   void
 }
 
@@ -177,17 +148,6 @@ client function void upload_data() {
   Dom.add_class(#label, "hidden")
 
   string data = Option.get(Dom.get_property(#preview, "src"));
-
-  // data is in the following format:
-  // data:image/<png|jpeg|etc.>;base64,<base64 encoded data>
-  // for now, we'll only locate ";base64," and ignore the first part
-  // we'll tell the browser the image is image/png, even if that's
-  // not the case (browsers are smart enough to figure things out)
-
-  // base64 decode the data on the client side. This will speed up the upload
-  int offset = Option.get(String.index(";base64,", data)) + 8
-  data = String.sub(offset, String.length(data)-offset, data)
-  data = Crypto.Base64.decode(data)
 
   // For now we must upload the data in base64, due to a bug in the framework
   int length = String.length(data);
@@ -219,14 +179,14 @@ client function void upload_data() {
     upload_data_aux(data, length, piece_length, next_info);
   } else {
     // We are done :)
-    s3_upload_data(info.id);
+    s3_upload_data(info.id)
     Client.goto("/{info.id}");
   }
 }
 
 exposed function upload_info upload_first_piece(upload_info info, string piece) {
   // TODO: what if id is already taken?
-  string id = Random.generic_string("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 4);
+  string id = Random.generic_string("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 6);
   string secret = Random.string(10);
   intmap data = Map.empty;
   data = Map.add(0, piece, data);
@@ -437,6 +397,7 @@ function resource display_pixlpaste() {
         <div id=#label class="help-block hidden"/>
       </div></div></div>
     </div></div></div>
+    <canvas id="canvas" style="border: 1px solid black"/>
     </>
   );
 }
@@ -454,21 +415,6 @@ function resource start(Uri.relative uri) {
       Resource.raw_text("google-site-verification: googlee4b78291cdd3f153.html")
     case {path:{hd:"robots.txt" ...} ...}:
       Resource.raw_text("User-agent: *\nAllow: /\n")
-    case {path:{hd:"s3" ...}, query:query ...}:
-      cred = List.fold(
-        function s3_credentials ((string k, string v), s3_credentials c) {
-          if ((c.public_key == "") && (k == "public_key")) {
-            {private_key:c.private_key, public_key:v};
-          } else if ((c.private_key == "") && (k == "private_key")) {
-            {private_key:v, public_key:c.public_key};
-          } else {
-            c;
-          }
-        },
-        query,
-        {private_key:"", public_key:""}
-      )
-      s3_save_credentials(cred)
     case {path:{hd:"local", ~tl} ...}:
       match (tl) {
         case {~hd ...}:
