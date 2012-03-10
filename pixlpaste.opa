@@ -12,6 +12,8 @@
  * - base64 decode the data on the client side before uploading.
  *   => waiting for: opa bug fix
  *
+ * - convert to jpg
+ *
  * - Fix date (hard coded UTC) issue
  *
  * - about page, help page
