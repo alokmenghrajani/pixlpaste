@@ -40,7 +40,6 @@
 
 import stdlib.web.client
 import stdlib.crypto
-import stdlib.web.canvas
 
 type pixel = {
   intmap(string) data,
@@ -397,7 +396,6 @@ function resource display_pixlpaste() {
         <div id=#label class="help-block hidden"/>
       </div></div></div>
     </div></div></div>
-    <canvas id="canvas" style="border: 1px solid black"/>
     </>
   );
 }
